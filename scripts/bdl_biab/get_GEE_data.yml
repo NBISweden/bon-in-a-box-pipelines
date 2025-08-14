@@ -1,0 +1,57 @@
+script: get_GEE_data.py
+name: Get GEE data
+description: This script downloads data from Google Earth Engine (GEE) based on the provided coordinates and date range. It crops the data to the specified region and returns the cropped raster in GeoTIFF format.
+author:
+  - name: Miguel Redondo
+    email: miguel.angel.redondo@nbis.se
+inputs:
+  image_size:
+    label: Image size
+    description: Size of the image
+    type: float
+    example: 128
+  m_pixel:
+    label: Meters per pixel
+    description: Size of the pixel in meters. This is used to determine the resolution of the raster data to be downloaded.
+    type: float
+    example: 10
+  coordinates:
+    label: Coordinates table
+    description: A csv file with the table of the samples of the locations to crop. The table must have the first 5 columns with the exact names "id", "latitude", "longitude", "start_date", and "end_date". Date should be in YYYY-MM-DD format. 
+    type: text/csv
+    example: /userdata/sample_example_gee.csv
+  collections:
+    label: Collection name
+    description: Name of the collections to download data from. For example, "SENTINEL2_L1C"
+    type: text[]
+    example: ['COPERNICUS/S2_SR_HARMONIZED']
+  gee_token_path:
+    label: GEE credential token path
+    description: Path to the GEE credential token file. 
+    type: string
+    example: /userdata/gee_keys/cnn-sdm-6a23e8ab235d.json
+  gee_account:
+    label: Google Earth Engine account
+    description: Google Earth Engine account name. This is the name of the account that is used to authenticate with the Google Earth Engine API.
+    type: string
+    example: ma-service@cnn-sdm.iam.gserviceaccount.com
+  output_crs:
+    label: Output coordinate reference system
+    description: Coordinate reference system to use for the output raster. For example, "EPSG:4326"
+    type: string
+    example: EPSG:3006
+outputs:
+  gee_raster:
+    label: Cropped gee raster
+    description: The path(s) to the tiff file(s) that are the cropped region of the global raster specified by the user. The cropped raster file is in GeoTIFF format.
+    type: image/tiff;application=geotiff
+conda:
+  channels:
+    - conda-forge
+  dependencies:
+    - pip
+    - pip:
+        - pandas
+        - ee
+        - geemap
+        - setuptools

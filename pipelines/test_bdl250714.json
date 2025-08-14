@@ -1,0 +1,453 @@
+{
+  "nodes": [
+    {
+      "id": "23",
+      "type": "userInput",
+      "position": {
+        "x": 31.140884502700032,
+        "y": 301.00165110079564
+      },
+      "dragHandle": ".dragHandle",
+      "data": {
+        "type": "text/csv",
+        "value": "/userdata/sample_example_short.csv"
+      }
+    },
+    {
+      "id": "26",
+      "type": "userInput",
+      "position": {
+        "x": 31.044484643187843,
+        "y": 337.44923425079213
+      },
+      "dragHandle": ".dragHandle",
+      "data": {
+        "type": "string",
+        "value": "EPSG:4326"
+      }
+    },
+    {
+      "id": "27",
+      "type": "userInput",
+      "position": {
+        "x": 34.04448464318773,
+        "y": 381.5159612155737
+      },
+      "dragHandle": ".dragHandle",
+      "data": {
+        "type": "string",
+        "value": "EPSG:3006"
+      }
+    },
+    {
+      "id": "31",
+      "type": "io",
+      "position": {
+        "x": 25.138477930442605,
+        "y": 170.71704658164288
+      },
+      "data": {
+        "descriptionFile": "biodiversity_dl_biab>select_data_sources.yml"
+      }
+    },
+    {
+      "id": "33",
+      "type": "io",
+      "position": {
+        "x": 1326.1624601009585,
+        "y": 320.3203153625716
+      },
+      "data": {
+        "descriptionFile": "biodiversity_dl_biab>get_local_geotif.yml"
+      }
+    },
+    {
+      "id": "34",
+      "type": "io",
+      "position": {
+        "x": 1272.9321573931907,
+        "y": 506.5888145540455
+      },
+      "data": {
+        "descriptionFile": "biodiversity_dl_biab>get_GEE_data.yml"
+      }
+    },
+    {
+      "id": "36",
+      "type": "userInput",
+      "position": {
+        "x": 29.013407101441203,
+        "y": 463.83178955088664
+      },
+      "dragHandle": ".dragHandle",
+      "data": {
+        "type": "float",
+        "value": 100
+      }
+    },
+    {
+      "id": "37",
+      "type": "userInput",
+      "position": {
+        "x": 28.041210003433548,
+        "y": 425.1153791512083
+      },
+      "dragHandle": ".dragHandle",
+      "data": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "id": "39",
+      "type": "userInput",
+      "position": {
+        "x": 32.060094214020864,
+        "y": 584.2310113514842
+      },
+      "dragHandle": ".dragHandle",
+      "data": {
+        "type": "float",
+        "value": 128
+      }
+    },
+    {
+      "id": "40",
+      "type": "userInput",
+      "position": {
+        "x": 35.574627761144086,
+        "y": 262.9201319782085
+      },
+      "dragHandle": ".dragHandle",
+      "data": {
+        "type": "float",
+        "value": 0.1
+      }
+    },
+    {
+      "id": "41",
+      "type": "userInput",
+      "position": {
+        "x": 30.82698733475229,
+        "y": 620.7658625061362
+      },
+      "dragHandle": ".dragHandle",
+      "data": {
+        "type": "float",
+        "value": 10
+      }
+    },
+    {
+      "id": "42",
+      "type": "userInput",
+      "position": {
+        "x": 25.72002217398233,
+        "y": 659.2327860044568
+      },
+      "dragHandle": ".dragHandle",
+      "data": {
+        "type": "string",
+        "value": "/userdata/gee_keys/cnn-sdm-6a23e8ab235d.json"
+      }
+    },
+    {
+      "id": "43",
+      "type": "userInput",
+      "position": {
+        "x": 22.283891211563628,
+        "y": 695.062626407876
+      },
+      "dragHandle": ".dragHandle",
+      "data": {
+        "type": "string",
+        "value": "ma-service@cnn-sdm.iam.gserviceaccount.com"
+      }
+    },
+    {
+      "id": "44",
+      "type": "output",
+      "position": {
+        "x": 1739.1717992962933,
+        "y": 263.55064894630283
+      },
+      "data": {
+        "label": "Output"
+      }
+    },
+    {
+      "id": "45",
+      "type": "output",
+      "position": {
+        "x": 1838.8475906204615,
+        "y": 545.2565025817689
+      },
+      "data": {
+        "label": "Output"
+      }
+    },
+    {
+      "id": "48",
+      "type": "io",
+      "position": {
+        "x": 449.85219943477273,
+        "y": 377.4272966444456
+      },
+      "data": {
+        "descriptionFile": "biodiversity_dl_biab>transform_crs_expandgrid.yml"
+      }
+    },
+    {
+      "id": "49",
+      "type": "constant",
+      "position": {
+        "x": 34.97119029638708,
+        "y": 498.6416276039015
+      },
+      "dragHandle": ".dragHandle",
+      "data": {
+        "type": "boolean",
+        "value": true
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "31",
+      "sourceHandle": "selection_local",
+      "target": "33",
+      "targetHandle": "global_tifs",
+      "id": "reactflow__edge-31selection_local-33global_tifs"
+    },
+    {
+      "source": "31",
+      "sourceHandle": "selection_remote",
+      "target": "34",
+      "targetHandle": "collections",
+      "id": "reactflow__edge-31selection_remote-34collections"
+    },
+    {
+      "source": "39",
+      "sourceHandle": null,
+      "target": "34",
+      "targetHandle": "image_size",
+      "id": "reactflow__edge-39-34image_size"
+    },
+    {
+      "source": "40",
+      "sourceHandle": null,
+      "target": "33",
+      "targetHandle": "window",
+      "id": "reactflow__edge-40-33window"
+    },
+    {
+      "source": "41",
+      "sourceHandle": null,
+      "target": "34",
+      "targetHandle": "m_pixel",
+      "id": "reactflow__edge-41-34m_pixel"
+    },
+    {
+      "source": "42",
+      "sourceHandle": null,
+      "target": "34",
+      "targetHandle": "gee_token_path",
+      "id": "reactflow__edge-42-34gee_token_path"
+    },
+    {
+      "source": "43",
+      "sourceHandle": null,
+      "target": "34",
+      "targetHandle": "gee_account",
+      "id": "reactflow__edge-43-34gee_account"
+    },
+    {
+      "source": "33",
+      "sourceHandle": "cropped_raster",
+      "target": "44",
+      "targetHandle": null,
+      "id": "reactflow__edge-33cropped_raster-44"
+    },
+    {
+      "source": "34",
+      "sourceHandle": "gee_raster",
+      "target": "45",
+      "targetHandle": null,
+      "id": "reactflow__edge-34gee_raster-45"
+    },
+    {
+      "source": "23",
+      "sourceHandle": null,
+      "target": "48",
+      "targetHandle": "coordinates",
+      "id": "reactflow__edge-23-48coordinates"
+    },
+    {
+      "source": "26",
+      "sourceHandle": null,
+      "target": "48",
+      "targetHandle": "crs_input",
+      "id": "reactflow__edge-26-48crs_input"
+    },
+    {
+      "source": "27",
+      "sourceHandle": null,
+      "target": "48",
+      "targetHandle": "crs_output",
+      "id": "reactflow__edge-27-48crs_output"
+    },
+    {
+      "source": "37",
+      "sourceHandle": null,
+      "target": "48",
+      "targetHandle": "generate_grid",
+      "id": "reactflow__edge-37-48generate_grid"
+    },
+    {
+      "source": "36",
+      "sourceHandle": null,
+      "target": "48",
+      "targetHandle": "grid_space",
+      "id": "reactflow__edge-36-48grid_space"
+    },
+    {
+      "source": "49",
+      "sourceHandle": null,
+      "target": "48",
+      "targetHandle": "table_local",
+      "id": "reactflow__edge-49-48table_local"
+    },
+    {
+      "source": "48",
+      "sourceHandle": "coordinates_trans_local",
+      "target": "33",
+      "targetHandle": "coordinates",
+      "id": "reactflow__edge-48coordinates_trans_local-33coordinates"
+    },
+    {
+      "source": "48",
+      "sourceHandle": "coordinates_trans_gee",
+      "target": "34",
+      "targetHandle": "coordinates",
+      "id": "reactflow__edge-48coordinates_trans_gee-34coordinates"
+    },
+    {
+      "source": "48",
+      "sourceHandle": "crs_output",
+      "target": "34",
+      "targetHandle": "output_crs",
+      "id": "reactflow__edge-48crs_output-34output_crs"
+    }
+  ],
+  "inputs": {
+    "pipeline@23": {
+      "label": "Coordinates table",
+      "description": "A csv file with the table of the samples of the locations to crop. The table must have the first 5 columns with the exact names \"id\", \"latitude\", \"longitude\", \"start_date\", and \"end_date\". Date should be in YYYY-MM-DD format.",
+      "type": "text/csv",
+      "example": "/userdata/sample_example_short.csv",
+      "weight": 0
+    },
+    "pipeline@26": {
+      "label": "Input crs",
+      "description": "The coordinate reference system of the input coordinates. For example, \"EPSG:4326\"",
+      "type": "string",
+      "example": "EPSG:4326",
+      "weight": 1
+    },
+    "pipeline@27": {
+      "label": "Output crs",
+      "description": "Output coordinate reference system to use for the transformed coordinates. For example, \"EPSG:3006\"",
+      "type": "string",
+      "example": "EPSG:3006",
+      "weight": 2
+    },
+    "biodiversity_dl_biab>select_data_sources.yml@31|config_csv": {
+      "description": "A path to the csv file that contains the data sources and their associated tif files. More data sources can be added. Remember to avoid spaces in the names of the data sources. When a new data source is added, the yaml file should be updated to include the new data source.",
+      "label": "Inventory of data sources",
+      "type": "text",
+      "example": "/userdata/datasources_config.csv",
+      "weight": 3
+    },
+    "biodiversity_dl_biab>select_data_sources.yml@31|user_choices": {
+      "description": "The user can select 1 to many availabledata sources. The script receives the selected option as an array of text and it outputs the selected data sources to either crop local tiff files or download remote collections from openEO.",
+      "label": "Selection of data sources",
+      "type": "options[]",
+      "options": [
+        "land cover",
+        "habitat heterogeneity",
+        "topography",
+        "sentinel2",
+        "human influence index",
+        "elevation",
+        "climate"
+      ],
+      "example": [
+        "land cover",
+        "sentinel2"
+      ],
+      "weight": 4
+    },
+    "pipeline@36": {
+      "label": "Grid spacing",
+      "description": "Spacing in km for the grid points to be generated within the extent of the provided coordinates. This will create a grid of points spaced at the specified distance.",
+      "type": "float",
+      "example": 100,
+      "weight": 5
+    },
+    "pipeline@37": {
+      "label": "Generate grid",
+      "description": "Click if the user wants to generate a grid of points",
+      "type": "boolean",
+      "example": true,
+      "weight": 6
+    },
+    "pipeline@39": {
+      "label": "Image size",
+      "description": "Size of the image",
+      "type": "float",
+      "example": 128,
+      "weight": 7
+    },
+    "pipeline@40": {
+      "label": "Window size",
+      "description": "Size of the window to crop in degrees",
+      "type": "float",
+      "example": 0.1,
+      "weight": 8
+    },
+    "pipeline@41": {
+      "label": "Meters per pixel",
+      "description": "Size of the pixel in meters. This is used to determine the resolution of the raster data to be downloaded.",
+      "type": "float",
+      "example": 10,
+      "weight": 9
+    },
+    "pipeline@42": {
+      "label": "GEE credential token path",
+      "description": "Path to the GEE credential token file.",
+      "type": "string",
+      "example": "/userdata/gee_keys/cnn-sdm-6a23e8ab235d.json",
+      "weight": 10
+    },
+    "pipeline@43": {
+      "label": "Google Earth Engine account",
+      "description": "Google Earth Engine account name. This is the name of the account that is used to authenticate with the Google Earth Engine API.",
+      "type": "string",
+      "example": "ma-service@cnn-sdm.iam.gserviceaccount.com",
+      "weight": 11
+    }
+  },
+  "outputs": {
+    "biodiversity_dl_biab>get_local_geotif.yml@33|cropped_raster": {
+      "description": "A path to the tiff file that is the cropped region of the global raster specified by the user. The cropped raster file is in GeoTIFF format.",
+      "label": "Cropped raster",
+      "type": "image/tiff;application=geotiff",
+      "weight": 0
+    },
+    "biodiversity_dl_biab>get_GEE_data.yml@34|gee_raster": {
+      "description": "The path(s) to the tiff file(s) that are the cropped region of the global raster specified by the user. The cropped raster file is in GeoTIFF format.",
+      "label": "Cropped gee raster",
+      "type": "image/tiff;application=geotiff",
+      "weight": 1
+    }
+  }
+}

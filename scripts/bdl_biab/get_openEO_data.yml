@@ -1,0 +1,60 @@
+script: get_openEO_data.py
+name: Get openEO data
+description: This script downloads data from openEO using the openEO API. It uses the openEO Python client to connect to the API and download the data.
+author:
+  - name: Miguel Redondo
+    email: miguel.angel.redondo@nbis.se
+inputs:
+  longitude:
+    label: Longitude
+    description: Longitude of the region to crop
+    type: float
+    example: 17.64
+  latitude:
+    label: Latitude
+    description: Latitude of the region to crop
+    type: float
+    example: 59.86
+  window:
+    label: Window size
+    description: Size of the window to crop in degrees
+    type: float
+    example: 0.1
+  date1:
+    label: Date to start collecting data
+    description: Date of the observation in YYYY-MM-DD format
+    type: text
+    example: "2020-08-01"
+  date2:
+    label: Date to end collecting data
+    description: Date of the observation in YYYY-MM-DD format
+    type: text
+    example: "2020-08-02"
+  coordinates:
+    label: Coordinates table
+    description: A csv file with the table of the samples of the locations to crop. The table must have the first 5 columns with the exact names "id", "latitude", "longitude", "start_date", and "end_date". Date should be in YYYY-MM-DD format. 
+    type: text/csv
+    example: /userdata/sample_example_short.csv
+  collections:
+    label: Collection name
+    description: Name of the collections to download data from. For example, "SENTINEL2_L1C"
+    type: text[]
+    example: [SENTINEL2_L1C]
+  refresh_token_file:
+    label: OpenEO token path
+    description: Path to the OpenEO token file. Important! After a time without using the token, it expires. To refresh the token, one must re-authenticate using the oicd and save the new token in this path. 
+    type: string
+    example: /userdata/refresh-tokens.json
+outputs:
+  openeo_raster:
+    label: Cropped openEO raster
+    description: The path(s) to the tiff file(s) that are the cropped region of the global raster specified by the user. The cropped raster file is in GeoTIFF format.
+    type: image/tiff;application=geotiff
+conda:
+  channels:
+    - conda-forge
+  dependencies:
+    - pip
+    - pip:
+        - openeo
+        - pandas

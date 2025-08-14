@@ -1,0 +1,43 @@
+script: select_data_sources.R
+name: Select data sources
+description: This script selects from multiple options the data sources to be used in the analysis. The user can select 0 to many from a fixed number of text options. The script receives the selected option as an array of text.
+author:
+  - name: Miguel Redondo
+    email: miguel.angel.redondo@nbis.se
+inputs:
+  config_csv:
+    label: Inventory of data sources
+    description: A path to the csv file that contains the data sources and their associated tif files. More data sources can be added. Remember to avoid spaces in the names of the data sources. When a new data source is added, the yaml file should be updated to include the new data source.
+    type: text
+    example: /userdata/datasources_config.csv
+  user_choices:
+    label: Selection of data sources
+    description: The user can select 1 to many availabledata sources. The script receives the selected option as an array of text and it outputs the selected data sources to either crop local tiff files or download remote collections from openEO. 
+    type: options[]
+    options:
+      - land cover
+      - habitat heterogeneity
+      - topography
+      - sentinel2
+      - human influence index
+      - elevation
+      - climate
+    example:
+      - land cover
+      - sentinel2
+outputs:
+  selection_local:
+    label: Selected tiff files
+    description: The list of selected local tiff files
+    type: text[]
+  selection_remote:
+    label: Selected collections
+    description: A list of selected collections to download from openEO
+    type: text[]
+conda:
+  channels:
+    - conda-forge
+    - r
+  dependencies:
+    - r-codetools
+    - r-rjson

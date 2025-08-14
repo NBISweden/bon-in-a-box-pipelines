@@ -1,0 +1,39 @@
+script: get_local_geotif.R
+name: Get local geotif
+description: This script crops a global raster file that is downloaded on a local folder based on the coordinates provided by the user and the size of the window
+author:
+  - name: Miguel Redondo
+    email: miguel.angel.redondo@nbis.se
+inputs:
+  global_tifs:
+    label: Selected tiff files
+    description: A path to the specific global raster file. The script will crop the raster based on the coordinates provided by the user and the size of the window. The global raster file should be in GeoTIFF format.
+    type: text[]
+    example: [/userdata/landcover_consensus_full_class_1.tif]
+  coordinates:
+    label: Coordinates table
+    description: A csv file with the table of the samples of the locations to crop. The table must have the first 5 columns with the exact names "id", "latitude", "longitude", "start_date", and "end_date". Date should be in YYYY-MM-DD format. 
+    type: text/csv
+    example:
+  window:
+    label: Window size
+    description: Size of the window to crop in degrees
+    type: float
+    example: 0.1
+outputs:
+  cropped_raster:
+    label: Cropped raster
+    description: A path to the tiff file that is the cropped region of the global raster specified by the user. The cropped raster file is in GeoTIFF format.
+    type: image/tiff;application=geotiff
+  output_text:
+    label: no output text
+    description: A text message indicating that no local tiff file was provided. This is used to inform the user that the script did not provide output because no input raster was specified. It is not an error to avoid stopping a pipeline when no local environmental sources are provided. 
+    type: text
+conda:
+  channels:
+    - conda-forge
+    - r
+  dependencies:
+    - r-codetools
+    - r-terra
+    - r-rjson
