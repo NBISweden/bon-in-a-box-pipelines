@@ -1,0 +1,9 @@
+source,category,local file path or collection name
+local,land cover,/userdata/landcover_consensus_full_class_1.tif
+local,habitat heterogeneity,/userdata/heterog_evenness_01_05_1km_uint16.tif
+local,topography,/userdata/elevation_1KMmd_GMTEDmd.tif
+remote,sentinel2,"COPERNICUS/S2_SR_HARMONIZED"
+remote,human influence index,"projects/HII/v1/"
+remote,elevation,"projects/sat-io/open-datasets/ASTER/GDEM"
+remote,climate,"WORLDCLIM/V1/BIO"
+
