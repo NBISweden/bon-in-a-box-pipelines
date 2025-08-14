@@ -1,3 +1,4 @@
 *
 !.gitignore
 !*_config.csv
+!*_short.csv
