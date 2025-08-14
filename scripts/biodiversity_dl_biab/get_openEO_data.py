@@ -4,7 +4,7 @@ import os;
 import pandas as pd;
 
 
-#check that openeo it is installed
+#check that openeo is properly installed
 print("dependencies loaded succesfully")
 print("openEO version: ", openeo.__version__)
 
