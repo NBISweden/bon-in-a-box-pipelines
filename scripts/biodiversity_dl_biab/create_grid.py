@@ -10,7 +10,7 @@ import geopandas
 import os
 import sys
 
-# Get all inputs from the Bon-in-a-Box environment at the beginning
+# Get all inputs from biab
 input = biab_inputs()
 coordinates = input['coordinates']
 input_crs = input['crs_input']
@@ -20,21 +20,14 @@ country_code = input['country_code']
 start_date = input['start_date']
 end_date = input['end_date']
 
-# Functions
+# Separate Functions
 
 # A function to transform coordinates
 def transform_crs(longitudes, latitudes, input_crs_str, output_crs_str):
     """
-    Transforms coordinates from an input CRS to an output CRS.
+    Transforms coordinates from an input CRS to an output CRS. We need this because no matter the input 
+    CRS, we need to transform to WGS84 for reverse geocoding
 
-    Args:
-        longitudes (np.array or list): Array or list of longitudes.
-        latitudes (np.array or list): Array or list of latitudes.
-        input_crs_str (str): String representation of the input CRS (e.g., "EPSG:4326").
-        output_crs_str (str): String representation of the output CRS (e.g., "EPSG:3857").
-
-    Returns:
-        tuple: (transformed_longitudes, transformed_latitudes)
     """
     transformer = Transformer.from_crs(CRS(input_crs_str), CRS(output_crs_str), always_xy=True)
     transformed_longitudes, transformed_latitudes = transformer.transform(longitudes, latitudes)
@@ -42,6 +35,11 @@ def transform_crs(longitudes, latitudes, input_crs_str, output_crs_str):
 
 # A function to convert the country codes from alpha-2 to alpha-3 using pycountries. Alpha-3 are used in geoboundaries
 def convert_alpha2_to_alpha3(alpha2_code):
+    """
+    Converts an alpha-2 country code to an alpha-3 country code using the pycountry library.
+    the alpha-2 is good to get the bounding box, but we need to cut the grid within the bounding box
+    with the country shape. This country shape we get it using the alpha3 code and the function get_country_geojson_polygon
+    """
     try:
         country = pycountry.countries.get(alpha_2=alpha2_code)
         if country:
@@ -60,7 +58,7 @@ def get_country_info_from_coords(latitude, longitude):
     Returns (country_alpha2_code, bounding_box) where bounding_box is [south, north, west, east].
     Input latitude and longitude for this function MUST be in WGS84 (EPSG:4326).
     """
-    geolocator = Nominatim(user_agent="country_grid_generator_app", timeout=10) # Increased timeout
+    geolocator = Nominatim(user_agent="country_grid_generator_app", timeout=60) # Increased timeout
     
     country_code_alpha2 = None
     country_name = None
@@ -78,7 +76,7 @@ def get_country_info_from_coords(latitude, longitude):
 
         if country_name:
             # Step 2: Forward geocode the country name to get the country's overall bounding box
-            location_country = geolocator.geocode(country_name, exactly_one=True, language='en', timeout=30)
+            location_country = geolocator.geocode(country_name, exactly_one=True, language='en', timeout=60)
             if location_country and location_country.raw and 'boundingbox' in location_country.raw:
                 bounding_box = location_country.raw['boundingbox'] # [south, north, west, east]
             else:
@@ -95,7 +93,7 @@ def get_country_info_from_coords(latitude, longitude):
 # Function to get the GeoJSON polygon for a country using its alpha-3 code from geoboundaries.org
 def get_country_geojson_polygon(alpha3_code):
     """
-    Fetches the GeoJSON boundary for a given ISO 3166-1 alpha-3 country code
+    Fetches the GeoJSON boundary for a given alpha-3 country code
     from geoboundaries.org and returns it as a Shapely Polygon or MultiPolygon.
     """
     try:
@@ -132,6 +130,8 @@ def generate_grid_points_in_wgs84_bounding_box(bounding_box_coords, spacing_km=1
     """
     Generates a grid of points within a WGS84 bounding box.
     bounding_box_coords: [south, north, west, east] in degrees.
+    Because the distances for a certain degree changes across latitudes, 
+    we adjust for that manually 
     """
     south, north, west, east = map(float, bounding_box_coords)
 
