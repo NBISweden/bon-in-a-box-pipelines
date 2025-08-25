@@ -65,8 +65,8 @@
       "id": "34",
       "type": "io",
       "position": {
-        "x": 1632.1025094951647,
-        "y": 442.82306363739076
+        "x": 1690.1025094951647,
+        "y": 422.82306363739076
       },
       "data": {
         "descriptionFile": "biodiversity_dl_biab>get_GEE_data.yml"
@@ -496,6 +496,13 @@
       "target": "34",
       "targetHandle": "output_crs",
       "id": "reactflow__edge-54crs_output-34output_crs"
+    },
+    {
+      "source": "54",
+      "sourceHandle": "crs_output",
+      "target": "34",
+      "targetHandle": "input_crs",
+      "id": "reactflow__edge-54crs_output-34input_crs"
     }
   ],
   "inputs": {
