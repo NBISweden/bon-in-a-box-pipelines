@@ -1,0 +1,67 @@
+script: create_grid.py
+name: Create grid
+description: This script adds a grid of points within the extent of the provided coordinates and/or within the alpha-2 country code provided. The user specifies the spacing of the grid points, and the output includes both the transformed coordinates and grid points.
+author:
+  - name: Miguel Redondo
+    email: miguel.angel.redondo@nbis.se
+inputs:
+  coordinates:
+    label: Coordinates table
+    description: A csv file with the table of the samples of the locations to transform. The table must have the first 3 columns with the exact names "id", "latitude", "longitude". If this table is used to download from GEE, two more columns with dates are required
+    type: text/csv
+    example: /userdata/sample_example_short.csv
+  crs_input:
+    label: Input crs
+    description: The coordinate reference system of the input coordinates. For example, "EPSG:4326"
+    type: string
+    example: EPSG:4326
+  crs_output:
+    label: Output crs
+    description: Output coordinate reference system to use for the transformed coordinates. For example, "EPSG:3006"
+    type: string
+    example: EPSG:3006
+  country_code:
+    label: Country code
+    description: The alpha-2 code of the country that the user wants to create the grid in addition to the one identified in the provided coordinates. You can check the list of country codes [here](https://www.iban.com/country-codes).
+    type: text[]
+    example: ['SE', 'NO']
+  grid_space:
+    label: Grid spacing
+    description: Spacing in km for the grid points to be generated within the extent of the provided coordinates. This will create a grid of points spaced at the specified distance.
+    type: float
+    example: 100.0
+  start_date:
+    label: Start date
+    description: The start date for the time range of the grid points.
+    type: text
+    example: "2020-01-01"
+  end_date:
+    label: End date
+    description: The end date for the time range of the grid points.
+    type: text
+    example: "2020-12-31"
+outputs:
+  transformed_grid:
+    label: Grid coordinates table 
+    description: A csv file with the transformed coordinates for downloading from Google Earth Engine
+    type: text/csv
+  crs_output:
+    label: Output crs
+    description: Coordinate reference system used to transform the input coordinates. For example, "EPSG:4326"
+    type: string
+conda:
+  channels:
+    - conda-forge
+  dependencies:
+    - proj
+    - pathlib
+    - requests
+    - pip
+    - pip:
+      - pandas
+      - pyproj
+      - shapely
+      - geopandas
+      - geopy
+      - pycountry
+      - numpy

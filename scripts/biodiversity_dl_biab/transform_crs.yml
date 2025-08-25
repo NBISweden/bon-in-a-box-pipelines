@@ -5,16 +5,6 @@ author:
   - name: Miguel Redondo
     email: miguel.angel.redondo@nbis.se
 inputs:
-  latitude:
-    label: Latitude
-    description: Latitude of single point to transform. For example 59.86
-    type: float
-    example:
-  longitude:
-    label: Longitude
-    description: Longitude of single point to transform.  For example, 17.64
-    type: float
-    example: 
   coordinates:
     label: Coordinates table
     description: A csv file with the table of the samples of the locations to transform. The table must have the first 3 columns with the exact names "id", "latitude", "longitude". If this table is used to download from GEE, two more columns with dates are required
@@ -31,23 +21,17 @@ inputs:
     type: string
     example: EPSG:3006
 outputs:
-  latitude_trans:
-    label: Transformed latitude
-    description: Longitude coordinate transformed to the specified CRS
-    type: float
-    example: 
-  longitude_trans:
-    label: Transformed longitude
-    description: Longitude coordinate transformed to the specified CRS
-    type: float
-    example: 
-  coordinates_trans:
+  transformed_coordinates:
     label: Transformed coordinates table
     description: A csv file with the transformed coordinates
     type: text/csv
   crs_output:
     label: Output crs
     description: Coordinate reference system used to transform the input coordinates. For example, "EPSG:4326"
+    type: string
+  crs_local:
+    label: Local CRS
+    description: Coordinate reference system used for the local transformed coordinates, specifically, "EPSG:4326"
     type: string
 conda:
   channels:

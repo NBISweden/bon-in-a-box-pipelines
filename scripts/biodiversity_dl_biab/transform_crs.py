@@ -1,82 +1,59 @@
 import sys, json;
 import os;
-import pandas as pd;
-from pyproj import Transformer
-from pathlib import Path
-
-
+import pandas as pd
+from pyproj import CRS, Transformer
+import numpy as np
 
 
 #import inputs
 input = biab_inputs()
-longitude = input['longitude']
-latitude = input['latitude']
 coordinates = input['coordinates']
 input_crs = input['crs_input']
 output_crs = input['crs_output']
 
-#export output crs
-biab_output("crs_output", output_crs)
-
-if coordinates is not None and (longitude is not None or latitude is not None):
-    # Mixed input: both coordinate table and long or lat are provided
-    #raise ValueError("Error: Mixed input provided. Please provide either longitude and latitude or coordinate table.")
-    biab_error_stop("Error: Mixed input provided. Please provide either longitude and latitude or coordinate table.")
-
-if (longitude is None or latitude is None) and coordinates is None:
-    # No coordinates table and not complete lat and long
-    #raise ValueError("Error: No coordinates provided. Please provide either longitude and latitude or coordinates.")
-    biab_error_stop("Error: No coordinates provided. Please provide either longitude and latitude or coordinates.")
-
-if(input_crs is None or output_crs is None):
-    # No input or output CRS provided
-    biab_error_stop("Error: No input or output CRS provided. Please provide both input and output CRS.")
 
 
-#Function to transform coordinates
+# Define a function to transform coordinates
+def transform_crs(longitudes, latitudes, input_crs_str, output_crs_str):
+    """
+    Transforms coordinates from an input CRS to an output CRS.
 
-def transform_crs(longitude, latitude, input_crs, output_crs):
-    transformer = Transformer.from_crs(input_crs, output_crs, always_xy=True)
-    # Transform arrays of longitude and latitude
-    longitude_trans, latitude_trans = transformer.transform(longitude, latitude)
-    return(longitude_trans, latitude_trans)
-
-
-###RUN FUNCTIONS###
-
-#For single point
-
-if coordinates is None:
-    print("converting single point coordinates...")
-    #Transform the coordinates
-    longitude_trans, latitude_trans = transform_crs(longitude, latitude, input_crs, output_crs)
-    #create output
-    biab_output("longitude_trans", longitude_trans)
-    biab_output("latitude_trans", latitude_trans)
-    biab_output("coordinates_trans", None)
+    """
+    transformer = Transformer.from_crs(CRS(input_crs_str), CRS(output_crs_str), always_xy=True)
+    transformed_longitudes, transformed_latitudes = transformer.transform(longitudes, latitudes)
+    return transformed_longitudes, transformed_latitudes
 
 
-##For coordinates table
-if coordinates is not None:
-    print("transforming coordinates in coordinate table...")
-    #read the coordinates table
-    coordinates_df = pd.read_csv(coordinates)
-    #Check if the four first columns are the right ones
-    colnames = list(coordinates_df.columns[0:3])
-    if colnames != ['id','latitude', 'longitude']:
-        biab_error_stop("Error: The first three columns must be named 'id', 'latitude', 'longitude'.")
-    #Transform the coordinates
-    longitude= coordinates_df['longitude'].to_numpy()
-    latitude = coordinates_df['latitude'].to_numpy()
-    longitude_trans, latitude_trans = transform_crs(longitude, latitude, input_crs, output_crs)
-    coordinates_df["latitude_"+output_crs] = latitude_trans
-    coordinates_df["longitude_"+output_crs] = longitude_trans
-    #export the transformed coordinates
-    #output_crs=os.path.join(os.getcwd(),"output", "biodiversity_dl_biab","transform_crs", "transformed_coordinates.csv")
-    #output_crs=os.path.join("/","output", "biodiversity_dl_biab","transform_crs", "transformed_coordinates.csv")
-    output_crs=os.path.join(output_folder, "transformed_coordinates.csv")
-    coordinates_df.to_csv(output_crs, index=False)
-    biab_output("coordinates_trans", output_crs)
-    biab_output("longitude_trans", None)#Adding this lines to avoid error on the pipeline
-    biab_output("latitude_trans", None)#Adding this lines to avoid error on the pipeline
+# Run the transformation
+print("Loading coordinates and transforming to the output CRS...")
+coords_df = pd.read_csv(coordinates)
 
+# Check that the first three columns have the proper names
+if list(coords_df.columns[:3]) != ['id', 'latitude', 'longitude']:
+    biab_error_stop("Error: The first three columns of the table must be named 'id', 'latitude', 'longitude'.")
+
+
+
+#2. TRANSFORM TO THE SPECIFIED OUTPUT CRS
+
+# Transform the coordinates to the specified output_crs
+transformed_longitudes, transformed_latitudes = transform_crs(
+    coords_df['longitude'].to_numpy(),
+    coords_df['latitude'].to_numpy(),
+    input_crs,
+    output_crs
+)
+
+# Add the transformed coordinates to the DataFrame with a specific column name
+coords_df[f"latitude_{output_crs.replace(':', '_')}"] = transformed_latitudes
+coords_df[f"longitude_{output_crs.replace(':', '_')}"] = transformed_longitudes
+
+# Save the transformed table for GEE
+output_table_path = os.path.join(output_folder, "transformed_coordinates.csv")
+coords_df.to_csv(output_table_path, index=False)
+
+# Export the transformed table for the next script in the pipeline
+biab_output("transformed_coordinates", output_table_path)
+biab_output("crs_output", output_crs) # Export the main output CRS for the pipeline
+
+print("Successfully transformed coordinates and saved the new table.")
