@@ -29,10 +29,6 @@ outputs:
     label: Output crs
     description: Coordinate reference system used to transform the input coordinates. For example, "EPSG:4326"
     type: string
-  crs_local:
-    label: Local CRS
-    description: Coordinate reference system used for the local transformed coordinates, specifically, "EPSG:4326"
-    type: string
 conda:
   channels:
     - conda-forge
