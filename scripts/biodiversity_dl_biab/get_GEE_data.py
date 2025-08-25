@@ -14,6 +14,7 @@ collections = input['collections']
 gee_account = input['gee_account']
 gee_token_path = input['gee_token_path']
 crs = input['output_crs']
+input_crs = input['input_crs']
 image_size = input['image_size']
 meters_per_pixel = input['m_pixel']
 
@@ -140,8 +141,8 @@ if coordinates is not None:
     if colnames != ['id','latitude', 'longitude', 'start_date', 'end_date']:
         biab_error_stop("Error: The first five columns must be named 'id', 'latitude', 'longitude', 'start_date' and 'end_date'.")
     #Check if the coordinates have been transformed previously
-    lat_transformed = "latitude_" + crs.replace(":", "_")
-    lon_transformed = "longitude_" + crs.replace(":", "_")
+    lat_transformed = "latitude_" + input_crs.replace(":", "_")
+    lon_transformed = "longitude_" + input_crs.replace(":", "_")
     coordinates_df.columns = coordinates_df.columns.str.replace(":", "_")
     #Create the empty list for the output paths
     file_paths = []
@@ -152,14 +153,33 @@ if coordinates is not None:
         # Loop through the coordinates table
         for row in coordinates_df.itertuples():
             sample_id = row[1]
+
+            # Re-incorporating the check for pre-transformed columns
+            # This logic now handles two scenarios
             if lat_transformed in coordinates_df.columns and lon_transformed in coordinates_df.columns:
                 # If the coordinates have been transformed, use the transformed coordinates
-                lat = getattr(row, lat_transformed)
                 lon = getattr(row, lon_transformed)
+                lat = getattr(row, lat_transformed)
+                # The CRS for this point is the user-specified input_crs
+                point_crs = input_crs
             else:
                 # If the coordinates have not been transformed, use the original coordinates
-                lat = row.latitude
                 lon = row.longitude
+                lat = row.latitude
+                # The CRS for this point is the user-specified input_crs
+                point_crs = input_crs
+
+            # Create an ee.Geometry.Point from the input coordinates and the correct CRS
+            point_geom = ee.Geometry.Point([lon, lat], point_crs)
+
+            # Get the projected coordinates of the point in the desired output CRS
+            # If the point_crs was already the output_crs, this will have no effect.
+            projected_point = point_geom.transform(crs).getInfo()['coordinates']
+
+            # Use the newly projected coordinates to define the window
+            target_point = [projected_point[0], projected_point[1]]
+
+
             date1 = row.start_date
             date2 = row.end_date
             #get target point

@@ -35,6 +35,11 @@ inputs:
     description: Google Earth Engine account name. This is the name of the account that is used to authenticate with the Google Earth Engine API.
     type: string
     example: ma-service@cnn-sdm.iam.gserviceaccount.com
+  input_crs:
+    label: Input coordinate reference system
+    description: Coordinate reference system of the input coordinates. For example, "EPSG:4326"
+    type: string
+    example: EPSG:4326
   output_crs:
     label: Output coordinate reference system
     description: Coordinate reference system to use for the output raster. For example, "EPSG:4326"
