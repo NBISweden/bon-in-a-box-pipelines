@@ -17,7 +17,7 @@ inputs:
     example:
   window:
     label: Window size
-    description: Size of the window to crop in degrees
+    description: Size of the window to crop in degrees. This parameter is only applied to the LOCAL GEOTIFF FILES
     type: float
     example: 0.1
 outputs:
