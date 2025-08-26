@@ -7,7 +7,7 @@ author:
 inputs:
   coordinates:
     label: Coordinates table
-    description: A csv file with the table of the samples of the locations to transform. The table must have the first 3 columns with the exact names "id", "latitude", "longitude". If this table is used to download from GEE, two more columns with dates are required
+    description: A csv file with the table of the samples of the locations to transform. The table must have the first 3 columns with the exact names "id", "latitude", "longitude". If this table is used to download from GEE, two more columns called "start_date" and "end_date"are required
     type: text/csv
     example: /userdata/sample_example_short.csv
   crs_input:
@@ -22,7 +22,7 @@ inputs:
     example: EPSG:3006
   country_code:
     label: Country code
-    description: The alpha-2 code of the country that the user wants to create the grid in addition to the one identified in the provided coordinates. You can check the list of country codes [here](https://www.iban.com/country-codes).
+    description: The alpha-2 code of the countries that the user wants to create the grid in addition to the one identified in the provided coordinates. You can check the list of country codes [here](https://www.iban.com/country-codes).
     type: text[]
     example: ['SE', 'NO']
   grid_space:
@@ -47,7 +47,7 @@ outputs:
     type: text/csv
   crs_output:
     label: Output crs
-    description: Coordinate reference system used to transform the input coordinates. For example, "EPSG:4326"
+    description: Coordinate reference system used to transform the input coordinates. For example, "EPSG:3006"
     type: string
 conda:
   channels:
