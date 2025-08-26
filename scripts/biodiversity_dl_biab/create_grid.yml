@@ -43,7 +43,7 @@ inputs:
 outputs:
   transformed_grid:
     label: Grid coordinates table 
-    description: A csv file with the transformed coordinates for downloading from Google Earth Engine
+    description: A csv file with the coordinates of the grid of points in the specified crs. The grid is appended to the input table if provided. 
     type: text/csv
   crs_output:
     label: Output crs

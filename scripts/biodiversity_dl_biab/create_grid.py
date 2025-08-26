@@ -20,7 +20,7 @@ country_code = input['country_code']
 start_date = input['start_date']
 end_date = input['end_date']
 
-# Separate Functions
+# Helper Functions
 
 # A function to transform coordinates
 def transform_crs(longitudes, latitudes, input_crs_str, output_crs_str):
@@ -54,11 +54,12 @@ def convert_alpha2_to_alpha3(alpha2_code):
 # A function to get the country 2 letters code based on coordinates
 def get_country_info_from_coords(latitude, longitude):
     """
+    A function for reverse geocoding
     Gets the country alpha-2 code and bounding box for a given latitude and longitude.
     Returns (country_alpha2_code, bounding_box) where bounding_box is [south, north, west, east].
-    Input latitude and longitude for this function MUST be in WGS84 (EPSG:4326).
+    Input latitude and longitude for this function MUST be in WGS84 (EPSG:4326). 
     """
-    geolocator = Nominatim(user_agent="country_grid_generator_app", timeout=60) # Increased timeout
+    geolocator = Nominatim(user_agent="country_grid_generator_app", timeout=60) 
     
     country_code_alpha2 = None
     country_name = None
@@ -75,7 +76,7 @@ def get_country_info_from_coords(latitude, longitude):
             return None, None
 
         if country_name:
-            # Step 2: Forward geocode the country name to get the country's overall bounding box
+            # Step 2: Get the country's overall bounding box
             location_country = geolocator.geocode(country_name, exactly_one=True, language='en', timeout=60)
             if location_country and location_country.raw and 'boundingbox' in location_country.raw:
                 bounding_box = location_country.raw['boundingbox'] # [south, north, west, east]
@@ -115,6 +116,7 @@ def get_country_geojson_polygon(alpha3_code):
         country_shape = shape(geojson_data['features'][0]['geometry'])
         print(f"Successfully fetched GeoJSON for {alpha3_code}.")
         return country_shape
+    #Some error cases for this function
     except requests.exceptions.RequestException as e:
         print(f"Error fetching GeoJSON for {alpha3_code} from GeoBoundaries: {e}")
         return None
@@ -136,18 +138,20 @@ def generate_grid_points_in_wgs84_bounding_box(bounding_box_coords, spacing_km=1
     south, north, west, east = map(float, bounding_box_coords)
 
     grid_points = []
-    lat_step_deg = spacing_km / 111.0 
+    lat_step_deg = spacing_km / 111.0 #If we assume a distance of 100km between points ,we approximate how many degrees 100km in latitude will be
     
-    current_lat = south
+    current_lat = south #We start selecting the lowest latitude
+    #Now we build two loops, the first one is to calculate how many degrees 100km in longitude are 
+    #This is depending on the latitude where we are
     while current_lat <= north:
         cos_lat = np.cos(np.radians(current_lat))
         if abs(cos_lat) < 1e-6:
             lon_step_deg = lat_step_deg
         else:
             lon_step_deg = spacing_km / (111.0 * cos_lat)
-
+    #Here we start creating the grid points at the specified longitude based on the latitude we are
         current_lon = west
-        while current_lon <= east:
+        while current_lon <= east:#The loop will run until the current longitude exceeds the eastern boundary
             point = Point(current_lon, current_lat)
             grid_points.append(point)
             current_lon += lon_step_deg
@@ -162,22 +166,23 @@ def create_country_grid(user_coordinates_df, input_crs, output_crs, grid_spacing
     Main function to create grids of points. It can use a coordinate table and/or a country code.
     If using a table, it checks if the table is already transformed. It then expands the grid points.
     """
+    #We create empty dataframe and empty objects to later take the user provided dates
     processed_user_coords_df = pd.DataFrame()
     has_date_cols = False
     final_start_date = None
     final_end_date = None
     
-    # Identify coordinates to use for geocoding and the list of countries
+    # A dictionary that will contain the unique countries to create a grid across
     unique_countries = {}
     
-    # Prioritize user-provided dates
+    # Take dates provided by user if any
     if user_start_date and user_end_date:
         final_start_date = user_start_date
         final_end_date = user_end_date
         has_date_cols = True
         print(f"Using user-provided dates: {final_start_date} to {final_end_date}.")
 
-    # Scenario 1: User provides a coordinate table
+    # Scenario 1: User provides a coordinate table. We then copy it and process it
     if user_coordinates_df is not None:
         print("Using provided coordinate table...")
         processed_user_coords_df = user_coordinates_df.copy()
@@ -213,15 +218,15 @@ def create_country_grid(user_coordinates_df, input_crs, output_crs, grid_spacing
         if geocoding_lats_wgs84 is None:
             return None
         
-        # Identify unique countries from all user coordinates
+        # Identify unique countries from all user coordinates, by reverse geocoding
         for i in range(len(geocoding_lats_wgs84)):
             lat_wgs84 = geocoding_lats_wgs84[i]
             lon_wgs84 = geocoding_lons_wgs84[i]
             country_alpha2_code, bounding_box_coords = get_country_info_from_coords(lat_wgs84, lon_wgs84)
-            if country_alpha2_code and bounding_box_coords:
+            if country_alpha2_code and bounding_box_coords: #We add it to the dictionary 
                 unique_countries[country_alpha2_code] = bounding_box_coords
         
-        # If user did not provide dates, check for 'start_date' and 'end_date' columns in the table
+        # In the case that the user does not provide the dates, to avoid an error on the pipeline, we can just add the last dates found on the table
         if not has_date_cols and 'start_date' in processed_user_coords_df.columns and 'end_date' in processed_user_coords_df.columns:
             has_date_cols = True
             try:
@@ -240,14 +245,14 @@ def create_country_grid(user_coordinates_df, input_crs, output_crs, grid_spacing
         # Transform the WGS84 points to output CRS and add new columns
         print(f"Transforming user input points from WGS84 to {output_crs}...")
         final_lons, final_lats = transform_crs(
-            processed_user_coords_df['longitude'].to_numpy(),
-            processed_user_coords_df['latitude'].to_numpy(),
+            geocoding_lons_wgs84,
+            geocoding_lats_wgs84,
             "EPSG:4326",
             output_crs
         )
         if final_lons is None: return None
         
-        processed_user_coords_df[f"latitude_{output_crs.replace(':', '_')}"] = final_lats
+        processed_user_coords_df[f"latitude_{output_crs.replace(':', '_')}"] = final_lats#We return the column with the final lat and lon values at the desired crs
         processed_user_coords_df[f"longitude_{output_crs.replace(':', '_')}"] = final_lons
 
     # Scenario 2: User provides one or more country codes (can be in addition to a table or alone)
@@ -255,15 +260,15 @@ def create_country_grid(user_coordinates_df, input_crs, output_crs, grid_spacing
         # Ensure country_code is a list
         if isinstance(user_country_code, str):
             user_country_code = [user_country_code]
-        
+        #Iterate through the provided country codes
         for code in user_country_code:
             print(f"Adding grid for provided country code '{code}'.")
             # Perform forward geocoding on the country code to get the bounding box
-            geolocator = Nominatim(user_agent="country_grid_generator_app", timeout=30)
+            geolocator = Nominatim(user_agent="country_grid_generator_app", timeout=60)
             location_country = geolocator.geocode(code, exactly_one=True, language='en')
             if location_country and location_country.raw and 'boundingbox' in location_country.raw:
                 bounding_box_coords = location_country.raw['boundingbox']
-                unique_countries[code.upper()] = bounding_box_coords
+                unique_countries[code.upper()] = bounding_box_coords#We add the bounding box to the country code element of the dictionary
                 print(f"Found bounding box for {code}: {bounding_box_coords}")
             else:
                 print(f"Warning: Could not find bounding box for country code '{code}'. Skipping.")
@@ -276,7 +281,7 @@ def create_country_grid(user_coordinates_df, input_crs, output_crs, grid_spacing
 
     all_generated_grid_dfs = []
 
-    # Generate grid for each unique country
+    # Generate grid for each unique country by iterating through the dictionary
     for country_alpha2_code, bounding_box_coords in unique_countries.items():
         print(f"\n--- Generating and cropping grid for country (alpha-2): {country_alpha2_code} ---")
         
@@ -312,6 +317,8 @@ def create_country_grid(user_coordinates_df, input_crs, output_crs, grid_spacing
         )
 
         # Perform spatial join to filter grid points that are within the country shape
+        #This step is very important, because the grid sometimes includes points in the sea or other regions
+        #We intersect the grid with the country shape
         cropped_grid_gdf = geopandas.sjoin(initial_grid_gdf, country_shape_gdf, predicate='within', how='inner')
         cropped_grid_points_wgs84 = cropped_grid_gdf['geometry'].tolist()
 
@@ -333,7 +340,7 @@ def create_country_grid(user_coordinates_df, input_crs, output_crs, grid_spacing
         if final_grid_longitudes is None:
             continue
 
-        country_grid_data = {
+        country_grid_data = {#We create the grid data that will be the dataframe later
             'id': [f"grid_{country_alpha2_code}_{i}" for i in range(len(final_grid_latitudes))],
             f"latitude_{output_crs.replace(':', '_')}": final_grid_latitudes,
             f"longitude_{output_crs.replace(':', '_')}": final_grid_longitudes,
@@ -349,7 +356,7 @@ def create_country_grid(user_coordinates_df, input_crs, output_crs, grid_spacing
         print(f"Generated {len(country_grid_df)} cropped grid points for {country_alpha2_code} in {output_crs}.")
         all_generated_grid_dfs.append(country_grid_df)
 
-    # Combine all generated grids with the user's data (if provided)
+    # Here we append the grids to the dataframe of the user
     final_df = pd.DataFrame()
     if not processed_user_coords_df.empty:
         all_dataframes = [processed_user_coords_df] + all_generated_grid_dfs
@@ -369,11 +376,13 @@ if coordinates is not None:
     #Check the first three columns
     if list(coords_df.columns[:3]) != ['id', 'latitude', 'longitude']:
         biab_error_stop("Error: The first three columns of the table must be named 'id', 'latitude', 'longitude'.")
+    #Now I check if the input table has dates in the right format. If they dont, but have other colums with "dates" I trigger an error to reformat table
     if 'start_date' not in coords_df.columns or 'end_date' not in coords_df.columns:
         if any('date' in col.lower() for col in coords_df.columns):
             biab_error_stop("Error: Date columns must be named 'start_date' and 'end_date' for processing.")
 
-# Call the main function with the appropriate inputs
+#After checking if there an input table or not, and if it is in the right format, I run the main function
+
 final_coords_df = create_country_grid(
     coords_df, 
     input_crs=input_crs, 
@@ -384,6 +393,7 @@ final_coords_df = create_country_grid(
     user_end_date=end_date
 )
 
+#Export in bon in a box format
 if final_coords_df is not None:
     # Save the final combined table
     output_table_path = os.path.join(output_folder, "transformed_coord_grid.csv")
