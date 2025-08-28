@@ -42,7 +42,7 @@ inputs:
     example: "2020-12-31"
   create_grid:
     label: Generate grid
-    description: Click if the user wants to generate a grid of points
+    description: Click if the user wants to generate a grid of points. When this script is used alone, this option must be true. When used in a pipeline, the user decides. 
     type: boolean
     example: true
 outputs:

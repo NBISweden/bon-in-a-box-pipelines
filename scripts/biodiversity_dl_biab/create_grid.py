@@ -21,6 +21,7 @@ start_date = input['start_date']
 end_date = input['end_date']
 create_grid = input['create_grid']
 
+print(f"Coordinates: {coordinates}")
 # Helper Functions
 
 # A function to transform coordinates

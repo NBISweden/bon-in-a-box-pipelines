@@ -12,9 +12,9 @@ inputs:
     example: [/userdata/landcover_consensus_full_class_1.tif]
   coordinates:
     label: Coordinates table
-    description: A csv file with the table of the samples of the locations to crop. The table must have the first 5 columns with the exact names "id", "latitude", "longitude", "start_date", and "end_date". Date should be in YYYY-MM-DD format. 
+    description: A csv file with the table of the samples of the locations to crop. The table must have one column called "id", and then two more columns with latitude or longitude that must be called "longitude" or "longitude_EPSG_4326" and "latitude" or "latitude_EPSG_4326".
     type: text/csv
-    example:
+    example: /userdata/sample_example_short.csv
   window:
     label: Window size
     description: Size of the window to crop in degrees. This parameter is only applied to the LOCAL GEOTIFF FILES

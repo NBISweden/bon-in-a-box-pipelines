@@ -535,7 +535,7 @@
   "inputs": {
     "pipeline@23": {
       "label": "Coordinates table",
-      "description": "A csv file with the table of the samples of the locations to crop. The table must have the first 5 columns with the exact names \"id\", \"latitude\", \"longitude\", \"start_date\", and \"end_date\". Date should be in YYYY-MM-DD format.",
+      "description": "A csv file with the table of the samples of the locations to crop. The table must have the first 3 columns with the exact names \"id\", \"latitude\", \"longitude\". If the table contain dates to be used when downloading from GEE the columns must be called\"start_date\", and \"end_date\". Date should be in YYYY-MM-DD format.",
       "type": "text/csv",
       "example": "/userdata/sample_example_short.csv",
       "weight": 0
@@ -555,7 +555,7 @@
       "weight": 2
     },
     "biodiversity_dl_biab>select_data_sources.yml@31|user_choices": {
-      "description": "The user can select 1 to many availabledata sources. The script receives the selected option as an array of text and it outputs the selected data sources to either crop local tiff files or download remote collections from openEO.",
+      "description": "The user can select 1 to many availabledata sources. The script receives the selected option as an array of text and it outputs the selected data sources to either crop local tiff files or download remote collections from Google earth engine.",
       "label": "Selection of data sources",
       "type": "options[]",
       "options": [
@@ -582,7 +582,7 @@
     },
     "pipeline@36": {
       "label": "Grid spacing",
-      "description": "Spacing in km for the grid points to be generated within the extent of the provided coordinates. This will create a grid of points spaced at the specified distance.",
+      "description": "Spacing in km for the grid points to be generated within the extent of the provided coordinates and/or specified country. This will create a grid of points spaced at the specified distance.",
       "type": "float",
       "example": 100,
       "weight": 5

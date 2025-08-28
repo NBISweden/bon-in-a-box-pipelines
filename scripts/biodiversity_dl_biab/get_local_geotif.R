@@ -63,6 +63,12 @@ if (!is.null(coordinates) && length(global_tif_path) != 0) {
     print("Using coordinate file")
     coordinates<-read.csv(coordinates)
     head(coordinates)
+    if (!("id" %in% colnames(coordinates)) | 
+    !(("latitude" %in% colnames(coordinates) & "longitude" %in% colnames(coordinates)) | 
+      ("latitude_EPSG_4326" %in% colnames(coordinates) & "longitude_EPSG_4326" %in% colnames(coordinates)))) {
+    stop("Error: The coordinates table must contain an 'id' column and columns 'latitude', 'longitude', or 'latitude_EPSG_4326', 'longitude_EPSG_4326'.")
+}
+
     file_paths <- c()
     #iterate over the provided tif paths
     for (path_id in global_tif_path){

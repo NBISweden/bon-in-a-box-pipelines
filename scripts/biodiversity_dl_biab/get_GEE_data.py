@@ -138,8 +138,8 @@ if coordinates is not None:
     coordinates_df = pd.read_csv(coordinates)
     #Check if the four first columns are the right ones
     colnames = list(coordinates_df.columns[0:5])
-    if colnames != ['id','latitude', 'longitude', 'start_date', 'end_date']:
-        biab_error_stop("Error: The first five columns must be named 'id', 'latitude', 'longitude', 'start_date' and 'end_date'.")
+    #if colnames != ['id','latitude', 'longitude', 'start_date', 'end_date']:
+    #    biab_error_stop("Error: The first five columns must be named 'id', 'latitude', 'longitude', 'start_date' and 'end_date'.")
     #Check if the coordinates have been transformed previously
     lat_transformed = "latitude_" + input_crs.replace(":", "_")
     lon_transformed = "longitude_" + input_crs.replace(":", "_")
