@@ -19,6 +19,7 @@ grid_space = input['grid_space']
 country_code = input['country_code']
 start_date = input['start_date']
 end_date = input['end_date']
+create_grid = input['create_grid']
 
 # Helper Functions
 
@@ -165,7 +166,20 @@ def create_country_grid(user_coordinates_df, input_crs, output_crs, grid_spacing
     """
     Main function to create grids of points. It can use a coordinate table and/or a country code.
     If using a table, it checks if the table is already transformed. It then expands the grid points.
+    If the user does not want to create the grid, it returns the original table and the output crs
     """
+
+    if not create_grid:
+        print("`create_grid` is FALSE. No grid will be generated.")
+        if user_coordinates_df is not None:
+            print("Returning the user-provided table for next steps of the pipeline.")
+            return user_coordinates_df
+        else:
+            # If no grid is created and no table is provided (very unlikely case), we trigger an error.
+            biab_error_stop("Error: `create_grid` is FALSE and no coordinate table was provided.")
+            return None
+
+    print("`create_grid` is TRUE. Proceeding with grid generation process.")
     #We create empty dataframe and empty objects to later take the user provided dates
     processed_user_coords_df = pd.DataFrame()
     has_date_cols = False

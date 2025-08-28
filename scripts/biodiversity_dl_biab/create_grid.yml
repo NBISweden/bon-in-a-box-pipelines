@@ -40,6 +40,11 @@ inputs:
     description: The end date for the time range of the grid points.
     type: text
     example: "2020-12-31"
+  create_grid:
+    label: Generate grid
+    description: Click if the user wants to generate a grid of points
+    type: boolean
+    example: true
 outputs:
   transformed_grid:
     label: Grid coordinates table 
