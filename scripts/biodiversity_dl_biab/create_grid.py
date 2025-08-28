@@ -234,6 +234,7 @@ def create_country_grid(user_coordinates_df, input_crs, output_crs, grid_spacing
             return None
         
         # Identify unique countries from all user coordinates, by reverse geocoding
+        print("Identifying unique countries from user coordinates...")
         for i in range(len(geocoding_lats_wgs84)):
             lat_wgs84 = geocoding_lats_wgs84[i]
             lon_wgs84 = geocoding_lons_wgs84[i]
