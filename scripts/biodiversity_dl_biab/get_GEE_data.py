@@ -81,7 +81,7 @@ def get_satellite_data_gee(start_date,end_date,gee_geometry,crs,gee_output_file,
         .filterDate(start_date, end_date) \
         .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 70)) \
         .map(maskS2clouds)
-    s2_collection = s2_collection.mean()
+    s2_collection = s2_collection.mean() #Here we calculate the mean for all the date range
     if target_channel == 'NDVI':
         target_channel = s2_collection.normalizedDifference(['B8', 'B4']).rename("NDVI")
     else:
