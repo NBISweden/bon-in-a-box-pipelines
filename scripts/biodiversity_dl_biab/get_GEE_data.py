@@ -66,6 +66,10 @@ def get_window_coordinates(target_point, offset=150):
 
 #Function to download sentinel 2 data
 def get_satellite_data_gee(start_date,end_date,gee_geometry,crs,gee_output_file,meters_per_pixel,target_channel='NDVI'):
+    """
+    A function to retrieve Sentinel-2 satellite data from Google Earth Engine.
+    It calculates the mean values of the images within the specified date range.
+    """
     def maskS2clouds(image):
         # This function is copied from GEE examples library and converted from JavaScript to Python
         # Function to mask clouds using the Sentinel-2 QA band.
